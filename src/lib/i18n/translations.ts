@@ -20,6 +20,7 @@ export const translations = {
       bookTable: "Book a table",
       alt: "Illustration of sushi pieces and soy sauce",
       hoverPreview: "🍱 Hover to preview our culinary artistry",
+      autoplayPreview: "🍱 Enjoy a preview of our culinary artistry",
       scrollToExplore: "Scroll to explore",
     },
     
@@ -525,6 +526,7 @@ export const translations = {
       bookTable: "Boka bord",
       alt: "Illustration av sushibitar och soja",
       hoverPreview: "🍱 Hovra för att förhandsgranska vår kulinariska konst",
+      autoplayPreview: "🍱 Upplev en förhandsvisning av vår kulinariska konst",
       scrollToExplore: "Scrolla för att utforska",
     },
     

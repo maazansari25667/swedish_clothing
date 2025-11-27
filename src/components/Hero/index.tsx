@@ -9,7 +9,8 @@ import { Icons } from "@/components/ui/icons";
 
 const Hero = () => {
   const { t } = useLanguage();
-  const [isVideoHovered, setIsVideoHovered] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const sectionRef = useRef<HTMLDivElement>(null);
 
@@ -22,16 +23,37 @@ const Hero = () => {
   const textY = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const videoY = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
-  // Video hover effect
+  // Autoplay video on mount
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    // Attempt to autoplay (muted for browser policies)
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.then === "function") {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch((error) => {
+          // Autoplay blocked by browser - video stays paused
+          console.log("Autoplay prevented:", error);
+          setIsPlaying(false);
+        });
+    }
+  }, []);
+
+  // Sync mute state with video element
   useEffect(() => {
     if (videoRef.current) {
-      if (isVideoHovered) {
-        videoRef.current.play();
-      } else {
-        videoRef.current.pause();
-      }
+      videoRef.current.muted = isMuted;
     }
-  }, [isVideoHovered]);
+  }, [isMuted]);
+
+  // Toggle mute/unmute
+  const toggleMute = () => {
+    setIsMuted((prev) => !prev);
+  };
 
   return (
     <section
@@ -137,20 +159,19 @@ const Hero = () => {
             <div className="relative w-full">
               <HighlightCard
                 className="relative group overflow-hidden ring-2 ring-white/20 backdrop-blur-sm border-white/30"
-                onMouseEnter={() => setIsVideoHovered(true)}
-                onMouseLeave={() => setIsVideoHovered(false)}
               >
-                {/* Video */}
+                {/* Video - Autoplays on mount */}
                 <motion.video
                   ref={videoRef}
+                  autoPlay
                   loop
-                  muted
+                  muted={isMuted}
                   playsInline
                   poster="/images/Gallery/10-768x512.jpg"
                   className="w-full h-auto object-cover"
                   style={{ aspectRatio: "565/775" }}
                   animate={{
-                    scale: isVideoHovered ? 1.08 : 1,
+                    scale: isPlaying ? 1.05 : 1,
                   }}
                   transition={{ duration: 0.7, ease: "easeOut" }}
                 >
@@ -160,57 +181,76 @@ const Hero = () => {
                 {/* Cinematic gradient overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-orange-500/20 pointer-events-none mix-blend-overlay" />
-                
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/30 to-transparent pointer-events-none"
-                  animate={{
-                    opacity: isVideoHovered ? 0 : 0.6,
-                  }}
-                  transition={{ duration: 0.5 }}
-                />
 
-                {/* Play indicator */}
-                <motion.div
-                  className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                  animate={{
-                    opacity: isVideoHovered ? 0 : 1,
-                  }}
-                  transition={{ duration: 0.4 }}
+                {/* Mute/Unmute toggle button */}
+                <motion.button
+                  onClick={toggleMute}
+                  className="absolute top-6 right-6 z-20 flex items-center justify-center w-14 h-14 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-xl border-2 border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-colors"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label={isMuted ? "Unmute video" : "Mute video"}
                 >
-                  <div className="flex items-center justify-center w-24 h-24 rounded-full bg-white/40 backdrop-blur-2xl border-2 border-white/60 shadow-[0_12px_48px_rgba(0,0,0,0.2)]">
+                  {isMuted ? (
                     <svg
-                      className="w-10 h-10 text-white ml-1"
-                      fill="currentColor"
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
                       viewBox="0 0 24 24"
                     >
-                      <path d="M8 5v14l11-7z" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                        clipRule="evenodd"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"
+                      />
                     </svg>
-                  </div>
-                </motion.div>
+                  ) : (
+                    <svg
+                      className="w-6 h-6 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                      />
+                    </svg>
+                  )}
+                </motion.button>
 
-                {/* Hover text */}
+                {/* Autoplay info text */}
                 <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.6 }}
                   className="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none"
-                  animate={{
-                    opacity: isVideoHovered ? 0 : 1,
-                    y: isVideoHovered ? 10 : 0,
-                  }}
-                  transition={{ duration: 0.4 }}
                 >
                   <p className="text-base text-white font-bold px-8 py-3 rounded-full bg-black/40 backdrop-blur-2xl border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
-                    {t.hero.hoverPreview}
+                    {t.hero.autoplayPreview}
                   </p>
                 </motion.div>
 
-                {/* Animated border glow */}
+                {/* Animated border glow - subtle pulse */}
                 <motion.div
                   className="absolute inset-0 rounded-[2rem] pointer-events-none"
                   animate={{
-                    boxShadow: isVideoHovered
-                      ? "0 0 60px rgba(239, 68, 68, 0.6), 0 0 120px rgba(239, 68, 68, 0.3)"
-                      : "0 0 0px rgba(239, 68, 68, 0)",
+                    boxShadow: [
+                      "0 0 40px rgba(239, 68, 68, 0.3)",
+                      "0 0 60px rgba(239, 68, 68, 0.5)",
+                      "0 0 40px rgba(239, 68, 68, 0.3)",
+                    ],
                   }}
-                  transition={{ duration: 0.5 }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                 />
               </HighlightCard>
 
