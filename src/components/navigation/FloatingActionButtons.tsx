@@ -22,7 +22,9 @@ import {
   ShoppingCart, 
   UtensilsCrossed,
   ExternalLink,
-  Navigation
+  Navigation,
+  Home,
+  Images
 } from "lucide-react";
 
 interface FABAction {
@@ -62,28 +64,40 @@ export default function FloatingActionButtons() {
       href: `tel:${sitePhoneHref}`
     },
     {
-      id: "whatsapp",
-      label: "WhatsApp",
-      icon: <MessageCircle className="h-5 w-5" />,
-      color: "bg-green-600 hover:bg-green-700",
-      action: "whatsapp",
-      showOnPages: ["/contact", "/menu"]
-    },
-    {
       id: "reserve",
       label: t.fab.reserveTable,
       icon: <Calendar className="h-5 w-5" />,
       color: "bg-purple-500 hover:bg-purple-600",
-      action: "reserve",
-      showOnPages: ["/", "/gallery", "/menu"]
+      action: "reserve"
     },
     {
       id: "menu",
       label: t.fab.viewMenu,
       icon: <UtensilsCrossed className="h-5 w-5" />,
       color: "bg-blue-500 hover:bg-blue-600",
-      action: "menu",
-      showOnPages: ["/", "/gallery", "/contact"]
+      action: "menu"
+    },
+    {
+      id: "home",
+      label: t.fab.home,
+      icon: <Home className="h-5 w-5" />,
+      color: "bg-amber-500 hover:bg-amber-600",
+      action: "home"
+    },
+    {
+      id: "gallery",
+      label: t.fab.gallery,
+      icon: <Images className="h-5 w-5" />,
+      color: "bg-pink-500 hover:bg-pink-600",
+      action: "gallery"
+    },
+    {
+      id: "whatsapp",
+      label: "WhatsApp",
+      icon: <MessageCircle className="h-5 w-5" />,
+      color: "bg-green-600 hover:bg-green-700",
+      action: "whatsapp",
+      showOnPages: ["/contact", "/menu"]
     },
     {
       id: "directions",
@@ -121,6 +135,12 @@ export default function FloatingActionButtons() {
         break;
       case "menu":
         router.push("/menu");
+        break;
+      case "home":
+        router.push("/");
+        break;
+      case "gallery":
+        router.push("/gallery");
         break;
       case "directions":
         window.open(`https://maps.google.com/?q=${encodeURIComponent(siteFullAddress)}`, "_blank");
@@ -349,59 +369,61 @@ export default function FloatingActionButtons() {
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
-        <div className="grid grid-cols-4 gap-0.5 p-2">
-          {contextualActions.slice(0, 4).map((item, index) => (
-            <motion.button
-              key={item.id}
-              className="flex flex-col items-center justify-center py-3 px-2 rounded-xl hover:bg-muted/50 transition-all relative group"
-              whileTap={{ scale: 0.9 }}
-              onClick={() => handleAction(item.action, item.href)}
-            >
-              <motion.div
-                className={`p-2.5 rounded-2xl ${item.color.split(" ")[0]} text-white mb-1.5 shadow-lg`}
-                animate={index === 0 ? {
-                  scale: [1, 1.05, 1],
-                  rotate: [0, 5, -5, 0]
-                } : {}}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                  delay: index * 0.2
-                }}
+        <div className="overflow-x-auto scrollbar-hide">
+          <div className="flex gap-1 p-2 min-w-max">
+            {contextualActions.slice(0, 6).map((item, index) => (
+              <motion.button
+                key={item.id}
+                className="flex flex-col items-center justify-center py-3 px-3 rounded-xl hover:bg-muted/50 transition-all relative group min-w-[72px]"
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleAction(item.action, item.href)}
               >
-                {item.icon}
-              </motion.div>
-              <span className="text-[10px] font-semibold text-foreground leading-tight text-center">
-                {item.label.split(" ").slice(0, 2).join(" ")}
-              </span>
-
-              {/* Badge for primary action */}
-              {index === 0 && (
                 <motion.div
-                  className="absolute -top-1 -right-1 bg-gradient-to-r from-red-600 to-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-black shadow-lg border border-white"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ 
-                    delay: 0.3,
-                    scale: {
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }
+                  className={`p-2.5 rounded-2xl ${item.color.split(" ")[0]} text-white mb-1.5 shadow-lg`}
+                  animate={index === 0 ? {
+                    scale: [1, 1.05, 1],
+                    rotate: [0, 5, -5, 0]
+                  } : {}}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: index * 0.2
                   }}
                 >
-                  NEW
+                  {item.icon}
                 </motion.div>
-              )}
+                <span className="text-[10px] font-semibold text-foreground leading-tight text-center">
+                  {item.label.split(" ").slice(0, 2).join(" ")}
+                </span>
 
-              {/* Active indicator */}
-              <motion.div
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1 bg-primary rounded-full opacity-0 group-active:opacity-100 transition-opacity"
-                style={{ width: "50%" }}
-              />
-            </motion.button>
-          ))}
+                {/* Badge for primary action */}
+                {index === 0 && (
+                  <motion.div
+                    className="absolute -top-1 -right-1 bg-gradient-to-r from-red-600 to-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-black shadow-lg border border-white"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ 
+                      delay: 0.3,
+                      scale: {
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }
+                    }}
+                  >
+                    NEW
+                  </motion.div>
+                )}
+
+                {/* Active indicator */}
+                <motion.div
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 h-1 bg-primary rounded-full opacity-0 group-active:opacity-100 transition-opacity"
+                  style={{ width: "50%" }}
+                />
+              </motion.button>
+            ))}
+          </div>
         </div>
 
         {/* Chat button in mobile */}
