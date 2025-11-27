@@ -277,7 +277,7 @@ export default function FloatingActionButtons() {
                     }
                   }}
                 >
-                  QUICK
+                  {t.fab.quickLabel}
                 </motion.div>
               )}
             </AnimatePresence>

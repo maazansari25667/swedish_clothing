@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { qoplaOrderUrl } from "@/config/site";
 import { LiveHoursIndicator } from "./LiveHoursIndicator";
@@ -11,8 +10,6 @@ import { useLanguage } from "@/lib/i18n/LanguageContext";
 import LanguageSwitcher from "./navigation/LanguageSwitcher";
 
 const Navbar = () => {
-  // Mobile menu toggle
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const pathname = usePathname();
   const { t, language } = useLanguage();
 
@@ -64,75 +61,16 @@ const Navbar = () => {
               ))}
             </ul>
 
-            {/* CTA Button + Live Hours - Right */}
-            <div className="hidden lg:flex items-center gap-3">
+            {/* Desktop: CTA Button + Live Hours - Right */}
+            {/* Mobile: Language Switcher + Status Pill + Order Button */}
+            <div className="flex items-center gap-2 lg:gap-3">
               <LanguageSwitcher />
               <LiveHoursIndicator />
-              <a href={qoplaOrderUrl} target="_blank" rel="noopener noreferrer">
+              <a href={qoplaOrderUrl} target="_blank" rel="noopener noreferrer" className="hidden lg:block">
                 <Button variant="default">{t.nav.orderOnline}</Button>
               </a>
             </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle mobile menu"
-              aria-expanded={mobileMenuOpen}
-              className="lg:hidden p-2 rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <span
-                className={`block h-0.5 w-6 bg-foreground transition-all duration-300 ${
-                  mobileMenuOpen ? "rotate-45 translate-y-1.5" : ""
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-6 bg-foreground mt-1.5 transition-all duration-300 ${
-                  mobileMenuOpen ? "opacity-0" : ""
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-6 bg-foreground mt-1.5 transition-all duration-300 ${
-                  mobileMenuOpen ? "-rotate-45 -translate-y-1.5" : ""
-                }`}
-              />
-            </button>
           </div>
-
-          {/* Mobile Menu */}
-          {mobileMenuOpen && (
-            <div className="lg:hidden mt-4 pb-4 border-t border-border pt-4">
-              <ul className="space-y-4">
-                {navLinks.map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`block text-base font-medium transition-all duration-200 ${
-                        pathname === link.href
-                          ? "text-primary"
-                          : "text-foreground/80 hover:text-primary"
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              
-              <div className="mt-6">
-                <a
-                  href={qoplaOrderUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full"
-                >
-                  <Button variant="default" className="w-full">
-                    Order Online
-                  </Button>
-                </a>
-              </div>
-            </div>
-          )}
         </div>
       </nav>
     </header>

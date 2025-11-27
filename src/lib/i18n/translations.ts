@@ -302,6 +302,18 @@ export const translations = {
       call: "Call",
       reserve: "Reserve",
       menu: "Menu",
+      quickLabel: "QUICK",
+    },
+    
+    // Status Pill
+    status: {
+      open: "Open Now",
+      closed: "Closed",
+      closingSoon: "Closing Soon",
+      opensTodayAt: "Opens today at {{time}}",
+      closesAt: "Closes at {{time}}",
+      opensAt: "Opens {{day}} at {{time}}",
+      checkHours: "Check opening hours",
     },
     
     // Toasts/Notifications
@@ -793,6 +805,18 @@ export const translations = {
       call: "Ring",
       reserve: "Boka",
       menu: "Meny",
+      quickLabel: "SNABB",
+    },
+    
+    // Status Pill
+    status: {
+      open: "Öppet Nu",
+      closed: "Stängt",
+      closingSoon: "Stänger Snart",
+      opensTodayAt: "Öppnar idag kl. {{time}}",
+      closesAt: "Stänger kl. {{time}}",
+      opensAt: "Öppnar {{day}} kl. {{time}}",
+      checkHours: "Kontrollera öppettider",
     },
     
     // Toasts/Notifications

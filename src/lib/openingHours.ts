@@ -49,15 +49,22 @@ function getCurrentSwedishTime(): Date {
 /**
  * Get day name from day number
  */
-function getDayName(dayNumber: number): string {
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  return days[dayNumber];
+function getDayName(dayNumber: number, t?: any): string {
+  // Use translated day abbreviations if available, otherwise fallback to English
+  const daysEn = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const daysSv = ["Sön", "Mån", "Tis", "Ons", "Tor", "Fre", "Lör"];
+  
+  // Check if we have translations and use Swedish days, otherwise English
+  if (t && t.status) {
+    return daysSv[dayNumber];
+  }
+  return daysEn[dayNumber];
 }
 
 /**
  * Calculate restaurant status and next event
  */
-export function getOpeningHoursInfo(): OpeningHoursInfo {
+export function getOpeningHoursInfo(t?: any): OpeningHoursInfo {
   const now = getCurrentSwedishTime();
   const currentDay = now.getDay();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -67,8 +74,8 @@ export function getOpeningHoursInfo(): OpeningHoursInfo {
   if (!todaySchedule) {
     return {
       status: "closed",
-      statusText: "Closed",
-      nextEvent: "Check opening hours",
+      statusText: t?.status?.closed || "Closed",
+      nextEvent: t?.status?.checkHours || "Check opening hours",
       isClosingSoon: false,
     };
   }
@@ -82,18 +89,20 @@ export function getOpeningHoursInfo(): OpeningHoursInfo {
     const isClosingSoon = minutesUntilClose <= 30;
 
     if (isClosingSoon) {
+      const closesAt = t?.status?.closesAt?.replace('{{time}}', todaySchedule.close) || `Closes at ${todaySchedule.close}`;
       return {
         status: "closing-soon",
-        statusText: "Closing Soon",
-        nextEvent: `Closes at ${todaySchedule.close}`,
+        statusText: t?.status?.closingSoon || "Closing Soon",
+        nextEvent: closesAt,
         isClosingSoon: true,
       };
     }
 
+    const closesAt = t?.status?.closesAt?.replace('{{time}}', todaySchedule.close) || `Closes at ${todaySchedule.close}`;
     return {
       status: "open",
-      statusText: "Open Now",
-      nextEvent: `Closes at ${todaySchedule.close}`,
+      statusText: t?.status?.open || "Open Now",
+      nextEvent: closesAt,
       isClosingSoon: false,
     };
   }
@@ -104,10 +113,11 @@ export function getOpeningHoursInfo(): OpeningHoursInfo {
 
   // If before opening time today, next opening is today
   if (currentMinutes < openMinutes) {
+    const opensTodayAt = t?.status?.opensTodayAt?.replace('{{time}}', todaySchedule.open) || `Opens today at ${todaySchedule.open}`;
     return {
       status: "closed",
-      statusText: "Closed",
-      nextEvent: `Opens today at ${todaySchedule.open}`,
+      statusText: t?.status?.closed || "Closed",
+      nextEvent: opensTodayAt,
       isClosingSoon: false,
     };
   }
@@ -118,13 +128,14 @@ export function getOpeningHoursInfo(): OpeningHoursInfo {
     nextSchedule = weeklySchedule.find((s) => s.day === nextOpeningDay)!;
 
     if (nextSchedule) {
-      const dayName = getDayName(nextOpeningDay);
+      const dayName = getDayName(nextOpeningDay, t);
       const openingTime = nextSchedule.open;
+      const opensAt = t?.status?.opensAt?.replace('{{day}}', dayName).replace('{{time}}', openingTime) || `Opens ${dayName} at ${openingTime}`;
 
       return {
         status: "closed",
-        statusText: "Closed",
-        nextEvent: `Opens ${dayName} at ${openingTime}`,
+        statusText: t?.status?.closed || "Closed",
+        nextEvent: opensAt,
         isClosingSoon: false,
       };
     }
@@ -132,8 +143,8 @@ export function getOpeningHoursInfo(): OpeningHoursInfo {
 
   return {
     status: "closed",
-    statusText: "Closed",
-    nextEvent: "Check opening hours",
+    statusText: t?.status?.closed || "Closed",
+    nextEvent: t?.status?.checkHours || "Check opening hours",
     isClosingSoon: false,
   };
 }

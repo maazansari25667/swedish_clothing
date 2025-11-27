@@ -6,8 +6,10 @@ import {
   getStatusIcon,
   type RestaurantStatus,
 } from "@/lib/openingHours";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 
 export function LiveHoursIndicator() {
+  const { t, language } = useLanguage();
   const [mounted, setMounted] = useState(false);
   const [status, setStatus] = useState<RestaurantStatus>("closed");
   const [statusText, setStatusText] = useState("");
@@ -19,7 +21,7 @@ export function LiveHoursIndicator() {
 
     // Update status immediately
     const updateStatus = () => {
-      const info = getOpeningHoursInfo();
+      const info = getOpeningHoursInfo(t);
       setStatus(info.status);
       setStatusText(info.statusText);
       setNextEvent(info.nextEvent || "");
@@ -32,7 +34,7 @@ export function LiveHoursIndicator() {
     const interval = setInterval(updateStatus, 60000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [language, t]);
 
   // Don't render during SSR to avoid hydration mismatch
   if (!mounted) {
