@@ -55,11 +55,11 @@ export default function FloatingActionButtons() {
       action: "shop"
     },
     {
-      id: "contact",
-      label: t.fab.callUs,
-      icon: <Phone className="h-5 w-5" />,
-      color: "bg-emerald-600 hover:bg-emerald-700",
-      action: "contact"
+      id: "book",
+      label: "Book Now",
+      icon: <ShoppingCart className="h-5 w-5" />,
+      color: "bg-indigo-600 hover:bg-indigo-700",
+      action: "book"
     },
     {
       id: "lookbook",
@@ -69,18 +69,18 @@ export default function FloatingActionButtons() {
       action: "lookbook"
     },
     {
-      id: "products",
-      label: t.fab.viewMenu,
-      icon: <Store className="h-5 w-5" />,
-      color: "bg-indigo-600 hover:bg-indigo-700",
-      action: "products"
-    },
-    {
       id: "home",
       label: "Home",
       icon: <Home className="h-5 w-5" />,
       color: "bg-orange-600 hover:bg-orange-700",
       action: "home"
+    },
+    {
+      id: "contact",
+      label: t.fab.callUs,
+      icon: <Phone className="h-5 w-5" />,
+      color: "bg-emerald-600 hover:bg-emerald-700",
+      action: "contact"
     },
     {
       id: "wishlist",
@@ -110,11 +110,12 @@ export default function FloatingActionButtons() {
       case "shop":
         router.push("/jackets");
         break;
+      case "book":
+        setBottomSheetContent("book");
+        setShowBottomSheet(true);
+        break;
       case "lookbook":
         router.push("/gallery");
-        break;
-      case "products":
-        router.push("/menu");
         break;
       case "contact":
         router.push("/contact");
@@ -127,7 +128,7 @@ export default function FloatingActionButtons() {
         break;
       case "whatsapp":
         // WhatsApp business link for clothing inquiries
-        window.open(`https://wa.me/${sitePhoneHref}?text=Hi! I'd like to know more about your clothing collection`, "_blank");
+        window.open(`https://wa.me/${sitePhoneHref}?text=Hi! I'd like to book a product from your clothing collection`, "_blank");
         showWhatsAppToast();
         break;
       case "chat":
@@ -440,27 +441,28 @@ export default function FloatingActionButtons() {
       <BottomSheet
         isOpen={showBottomSheet}
         onClose={() => setShowBottomSheet(false)}
-        title="Quick Actions"
+        title="Book a Product"
         height="md"
       >
         <div className="p-6 space-y-4">
           <p className="text-muted-foreground mb-6">
-            How can we help you today?
+            How would you like to book your product?
           </p>
           
           <Button
             variant="default"
             size="lg"
-            className="w-full justify-start gap-3"
+            className="w-full justify-start gap-3 bg-green-600 hover:bg-green-700"
             onClick={() => {
-              router.push("/jackets");
+              window.open(`https://wa.me/${sitePhoneHref}?text=Hi! I'd like to book a product from your clothing collection`, "_blank");
               setShowBottomSheet(false);
+              showWhatsAppToast();
             }}
           >
-            <ShoppingBag className="h-5 w-5" />
+            <MessageCircle className="h-5 w-5" />
             <div className="text-left">
-              <div className="font-bold">Shop Collection</div>
-              <div className="text-xs opacity-80">Browse our jackets</div>
+              <div className="font-bold">WhatsApp Booking</div>
+              <div className="text-xs opacity-80">Quick booking via WhatsApp</div>
             </div>
           </Button>
 
@@ -469,14 +471,14 @@ export default function FloatingActionButtons() {
             size="lg"
             className="w-full justify-start gap-3"
             onClick={() => {
-              handleAction("whatsapp");
+              window.open(`tel:${sitePhoneHref}`, "_self");
               setShowBottomSheet(false);
             }}
           >
-            <MessageCircle className="h-5 w-5" />
+            <Phone className="h-5 w-5" />
             <div className="text-left">
-              <div className="font-bold">WhatsApp Us</div>
-              <div className="text-xs opacity-80">Message us directly</div>
+              <div className="font-bold">Call to Book</div>
+              <div className="text-xs opacity-80">Speak with our team</div>
             </div>
           </Button>
 
