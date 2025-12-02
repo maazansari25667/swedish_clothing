@@ -18,13 +18,12 @@ import {
   Phone, 
   MessageCircle, 
   MapPin, 
-  Calendar, 
+  ShoppingBag, 
   ShoppingCart, 
-  UtensilsCrossed,
-  ExternalLink,
-  Navigation,
+  Heart,
   Home,
-  Images
+  Images,
+  Store
 } from "lucide-react";
 
 interface FABAction {
@@ -46,50 +45,35 @@ export default function FloatingActionButtons() {
   const pathname = usePathname();
   const { t } = useLanguage();
 
-  // Define all possible FAB actions
+  // Define all possible FAB actions for clothing e-commerce
   const allActions: FABAction[] = [
     {
-      id: "order",
+      id: "shop",
       label: t.fab.orderNow,
-      icon: <ShoppingCart className="h-5 w-5" />,
-      color: "bg-primary hover:bg-primary/90",
-      action: "order"
+      icon: <ShoppingBag className="h-5 w-5" />,
+      color: "bg-blue-600 hover:bg-blue-700",
+      action: "shop"
     },
     {
-      id: "call",
-      label: t.fab.callUs,
-      icon: <Phone className="h-5 w-5" />,
-      color: "bg-emerald-500 hover:bg-emerald-600",
-      action: "call",
-      href: `tel:${sitePhoneHref}`
-    },
-    {
-      id: "reserve",
+      id: "lookbook",
       label: t.fab.reserveTable,
-      icon: <Calendar className="h-5 w-5" />,
-      color: "bg-purple-500 hover:bg-purple-600",
-      action: "reserve"
-    },
-    {
-      id: "menu",
-      label: t.fab.viewMenu,
-      icon: <UtensilsCrossed className="h-5 w-5" />,
-      color: "bg-blue-500 hover:bg-blue-600",
-      action: "menu"
+      icon: <Images className="h-5 w-5" />,
+      color: "bg-purple-600 hover:bg-purple-700",
+      action: "lookbook"
     },
     {
       id: "home",
-      label: t.fab.home,
+      label: "Home",
       icon: <Home className="h-5 w-5" />,
-      color: "bg-amber-500 hover:bg-amber-600",
+      color: "bg-orange-600 hover:bg-orange-700",
       action: "home"
     },
     {
-      id: "gallery",
-      label: t.fab.gallery,
-      icon: <Images className="h-5 w-5" />,
-      color: "bg-pink-500 hover:bg-pink-600",
-      action: "gallery"
+      id: "contact",
+      label: t.fab.callUs,
+      icon: <Phone className="h-5 w-5" />,
+      color: "bg-emerald-600 hover:bg-emerald-700",
+      action: "contact"
     },
     {
       id: "whatsapp",
@@ -97,15 +81,7 @@ export default function FloatingActionButtons() {
       icon: <MessageCircle className="h-5 w-5" />,
       color: "bg-green-600 hover:bg-green-700",
       action: "whatsapp",
-      showOnPages: ["/contact", "/menu"]
-    },
-    {
-      id: "directions",
-      label: "Get Directions",
-      icon: <Navigation className="h-5 w-5" />,
-      color: "bg-orange-500 hover:bg-orange-600",
-      action: "directions",
-      showOnPages: ["/contact"]
+      showOnPages: ["/contact", "/jackets"]
     }
   ];
 
@@ -117,34 +93,22 @@ export default function FloatingActionButtons() {
 
   const handleAction = (action: string, href?: string) => {
     switch (action) {
-      case "order":
-        window.open(qoplaOrderUrl, "_blank");
-        showOrderSuccessToast();
+      case "shop":
+        router.push("/jackets");
         break;
-      case "call":
-        if (href) window.location.href = href;
+      case "lookbook":
+        router.push("/gallery");
         break;
-      case "whatsapp":
-        // WhatsApp business link
-        window.open(`https://wa.me/${sitePhoneHref}?text=Hi! I'd like to know more about your menu`, "_blank");
-        showWhatsAppToast();
-        break;
-      case "reserve":
-        setBottomSheetContent("reserve");
-        setShowBottomSheet(true);
-        break;
-      case "menu":
-        router.push("/menu");
+      case "contact":
+        router.push("/contact");
         break;
       case "home":
         router.push("/");
         break;
-      case "gallery":
-        router.push("/gallery");
-        break;
-      case "directions":
-        window.open(`https://maps.google.com/?q=${encodeURIComponent(siteFullAddress)}`, "_blank");
-        showDirectionsToast();
+      case "whatsapp":
+        // WhatsApp business link for clothing inquiries
+        window.open(`https://wa.me/${sitePhoneHref}?text=Hi! I'd like to know more about your clothing collection`, "_blank");
+        showWhatsAppToast();
         break;
       case "chat":
         setShowChat(!showChat);
@@ -344,18 +308,18 @@ export default function FloatingActionButtons() {
               <Button 
                 variant="outline" 
                 className="w-full justify-start gap-3"
-                onClick={() => handleAction("call", `tel:${sitePhoneHref}`)}
+                onClick={() => handleAction("contact")}
               >
                 <Phone className="h-4 w-4" />
-                Call Us Now
+                Contact Us
               </Button>
               <Button 
                 variant="outline" 
                 className="w-full justify-start gap-3"
-                onClick={() => router.push("/contact")}
+                onClick={() => router.push("/gallery")}
               >
-                <Calendar className="h-4 w-4" />
-                Book a Table
+                <Images className="h-4 w-4" />
+                View Lookbook
               </Button>
             </div>
           </motion.div>
@@ -456,65 +420,62 @@ export default function FloatingActionButtons() {
       <BottomSheet
         isOpen={showBottomSheet}
         onClose={() => setShowBottomSheet(false)}
-        title={bottomSheetContent === "reserve" ? "Reserve a Table" : "Quick Action"}
+        title="Quick Actions"
         height="md"
       >
-        {bottomSheetContent === "reserve" && (
-          <div className="p-6 space-y-4">
-            <p className="text-muted-foreground mb-6">
-              Choose how you'd like to reserve your table:
-            </p>
-            
-            <Button
-              variant="default"
-              size="lg"
-              className="w-full justify-start gap-3"
-              onClick={() => {
-                handleAction("call", `tel:${sitePhoneHref}`);
-                setShowBottomSheet(false);
-              }}
-            >
-              <Phone className="h-5 w-5" />
-              <div className="text-left">
-                <div className="font-bold">Call to Reserve</div>
-                <div className="text-xs opacity-80">Instant confirmation</div>
-              </div>
-            </Button>
+        <div className="p-6 space-y-4">
+          <p className="text-muted-foreground mb-6">
+            How can we help you today?
+          </p>
+          
+          <Button
+            variant="default"
+            size="lg"
+            className="w-full justify-start gap-3"
+            onClick={() => {
+              router.push("/jackets");
+              setShowBottomSheet(false);
+            }}
+          >
+            <ShoppingBag className="h-5 w-5" />
+            <div className="text-left">
+              <div className="font-bold">Shop Collection</div>
+              <div className="text-xs opacity-80">Browse our jackets</div>
+            </div>
+          </Button>
 
-            <Button
-              variant="secondary"
-              size="lg"
-              className="w-full justify-start gap-3"
-              onClick={() => {
-                handleAction("whatsapp");
-                setShowBottomSheet(false);
-              }}
-            >
-              <MessageCircle className="h-5 w-5" />
-              <div className="text-left">
-                <div className="font-bold">WhatsApp Reservation</div>
-                <div className="text-xs opacity-80">Message us directly</div>
-              </div>
-            </Button>
+          <Button
+            variant="secondary"
+            size="lg"
+            className="w-full justify-start gap-3"
+            onClick={() => {
+              handleAction("whatsapp");
+              setShowBottomSheet(false);
+            }}
+          >
+            <MessageCircle className="h-5 w-5" />
+            <div className="text-left">
+              <div className="font-bold">WhatsApp Us</div>
+              <div className="text-xs opacity-80">Message us directly</div>
+            </div>
+          </Button>
 
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full justify-start gap-3"
-              onClick={() => {
-                router.push("/contact");
-                setShowBottomSheet(false);
-                showReservationToast();
-              }}
-            >
-              <Calendar className="h-5 w-5" />
-              <div className="text-left">
-                <div className="font-bold">Online Form</div>
-                <div className="text-xs opacity-80">Fill reservation details</div>
-              </div>
-            </Button>
-          </div>
-        )}
+          <Button
+            variant="outline"
+            size="lg"
+            className="w-full justify-start gap-3"
+            onClick={() => {
+              router.push("/contact");
+              setShowBottomSheet(false);
+            }}
+          >
+            <Phone className="h-5 w-5" />
+            <div className="text-left">
+              <div className="font-bold">Contact Form</div>
+              <div className="text-xs opacity-80">Send us a message</div>
+            </div>
+          </Button>
+        </div>
       </BottomSheet>
     </>
   );
