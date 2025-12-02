@@ -55,11 +55,25 @@ export default function FloatingActionButtons() {
       action: "shop"
     },
     {
+      id: "contact",
+      label: t.fab.callUs,
+      icon: <Phone className="h-5 w-5" />,
+      color: "bg-emerald-600 hover:bg-emerald-700",
+      action: "contact"
+    },
+    {
       id: "lookbook",
       label: t.fab.reserveTable,
       icon: <Images className="h-5 w-5" />,
       color: "bg-purple-600 hover:bg-purple-700",
       action: "lookbook"
+    },
+    {
+      id: "products",
+      label: t.fab.viewMenu,
+      icon: <Store className="h-5 w-5" />,
+      color: "bg-indigo-600 hover:bg-indigo-700",
+      action: "products"
     },
     {
       id: "home",
@@ -69,11 +83,11 @@ export default function FloatingActionButtons() {
       action: "home"
     },
     {
-      id: "contact",
-      label: t.fab.callUs,
-      icon: <Phone className="h-5 w-5" />,
-      color: "bg-emerald-600 hover:bg-emerald-700",
-      action: "contact"
+      id: "wishlist",
+      label: "Wishlist",
+      icon: <Heart className="h-5 w-5" />,
+      color: "bg-pink-600 hover:bg-pink-700",
+      action: "wishlist"
     },
     {
       id: "whatsapp",
@@ -99,11 +113,17 @@ export default function FloatingActionButtons() {
       case "lookbook":
         router.push("/gallery");
         break;
+      case "products":
+        router.push("/menu");
+        break;
       case "contact":
         router.push("/contact");
         break;
       case "home":
         router.push("/");
+        break;
+      case "wishlist":
+        router.push("/gallery");
         break;
       case "whatsapp":
         // WhatsApp business link for clothing inquiries
